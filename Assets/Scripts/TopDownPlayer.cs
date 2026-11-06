@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class TopDownPlayer : MonoBehaviour
 {
+    public DialogueBox dialogueBox;
     public float moveSpeed = 4f;
     public float frameTime = 0.15f;
     public Sprite[] downSprites;
@@ -27,6 +28,7 @@ public class TopDownPlayer : MonoBehaviour
     }
     void Update()
     {
+        if (dialogueBox.isOpen) { moveInput = Vector2.zero; }
         rb.linearVelocity = moveInput * moveSpeed;
         if (facingDir.y > 0) { currentSprites = upSprites; }
         else if (facingDir.y < 0) { currentSprites = downSprites; }
