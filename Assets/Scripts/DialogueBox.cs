@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.UI;
 public class DialogueBox : MonoBehaviour
 {
     public GameObject panel;
@@ -15,13 +16,18 @@ public class DialogueBox : MonoBehaviour
     private Talk current;
     private int index = 0;
     private bool choosing = false;
+    private int pick = 1;
+    public Image portraitImage;
     void Update()
     {
         Keyboard kb = Keyboard.current;
         if (choosing)
         {
-            if (kb.digit1Key.wasPressedThisFrame) { Choose(1); }
-            else if (kb.digit2Key.wasPressedThisFrame) { Choose(2); }
+            bool up = kb.upArrowKey.wasPressedThisFrame;
+            bool down = kb.downArrowKey.wasPressedThisFrame;
+            if (up) { pick = 1; DrawChoices(); }
+            if (down) { pick = 2; DrawChoices(); }
+            if (kb.eKey.wasPressedThisFrame) { Choose(pick); }
         }
         else if (kb.eKey.wasPressedThisFrame)
         {
@@ -42,6 +48,8 @@ public class DialogueBox : MonoBehaviour
     {
         nameText.text = current.lines[index].speaker;
         bodyText.text = current.lines[index].text;
+        Sprite face = current.lines[index].portrait;   
+        portraitImage.sprite = face;   
         bool last = index == current.lines.Length - 1;
         if (last && current.choice1 != "") { ShowChoices(); }
     }
@@ -54,9 +62,16 @@ public class DialogueBox : MonoBehaviour
     void ShowChoices()
     {
         choosing = true;
-        choiceText1.text = "1. " + current.choice1;
-        choiceText2.text = "2. " + current.choice2;
+        pick = 1;
+        DrawChoices();
         choicePanel.SetActive(true);
+    }
+    void DrawChoices()
+    {
+        choiceText1.text = "   " + current.choice1;
+        choiceText2.text = "   " + current.choice2;
+        if (pick == 1) { choiceText1.text = "> " + current.choice1; }
+        else { choiceText2.text = "> " + current.choice2; }
     }
     void Choose(int number)
     {
